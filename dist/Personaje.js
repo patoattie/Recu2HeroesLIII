@@ -1,72 +1,42 @@
-class Personaje
-{
-    protected id:number;
-    protected nombre:string;
-    protected edad:number;
-
-    constructor(id?:number, nombre?:string, edad?:number)
-    {
+var Personaje = (function () {
+    function Personaje(id, nombre, edad) {
         this.id = id;
         this.nombre = nombre;
         this.edad = edad;
     }
-
-    public static getProximoId():number
-    {
-        let proximoID:number = Number(localStorage.getItem("ID"));
-
-        if(isNaN(proximoID) || proximoID == 0)
-        {
+    Personaje.getProximoId = function () {
+        var proximoID = Number(localStorage.getItem("ID"));
+        if (isNaN(proximoID) || proximoID == 0) {
             proximoID = 20000;
         }
-
         return proximoID;
-    }
-
-    public static setProximoId():void
-    {
-        let proximoID:number = this.getProximoId();
+    };
+    Personaje.setProximoId = function () {
+        var proximoID = this.getProximoId();
         proximoID++;
-
         localStorage.setItem("ID", String(proximoID));
-    }
-
-    public getId():number
-    {
+    };
+    Personaje.prototype.getId = function () {
         return this.id;
-    }
-
-    public setId(id:number):void
-    {
+    };
+    Personaje.prototype.setId = function (id) {
         this.id = id;
-    }
-
-    public getNombre():string
-    {
+    };
+    Personaje.prototype.getNombre = function () {
         return this.nombre;
-    }
-
-    public setNombre(nombre:string):void
-    {
+    };
+    Personaje.prototype.setNombre = function (nombre) {
         this.nombre = nombre;
-    }
-
-    public getEdad():number
-    {
+    };
+    Personaje.prototype.getEdad = function () {
         return this.edad;
-    }
-
-    public setEdad(edad:number):void
-    {
+    };
+    Personaje.prototype.setEdad = function (edad) {
         this.edad = edad;
-    }
-
-    public getDinamico(atributo:string):any
-    {
-        let valor:any;
-
-        switch(atributo)
-        {
+    };
+    Personaje.prototype.getDinamico = function (atributo) {
+        var valor;
+        switch (atributo) {
             case "id":
                 valor = this.getId();
                 break;
@@ -80,14 +50,10 @@ class Personaje
                 valor = null;
                 break;
         }
-
         return valor;
-    }
-
-    public setDinamico(atributo:string, valor:any):void
-    {
-        switch(atributo)
-        {
+    };
+    Personaje.prototype.setDinamico = function (atributo, valor) {
+        switch (atributo) {
             case "id":
                 this.setId(valor);
                 break;
@@ -98,21 +64,16 @@ class Personaje
                 this.setEdad(valor);
                 break;
         }
-    }
-
-    public toString():string
-    {
-        let texto:string = "";
-
+    };
+    Personaje.prototype.toString = function () {
+        var texto = "";
         texto += "ID: " + this.getId() + "\n";
         texto += "NOMBRE: " + this.getNombre() + "\n";
         texto += "EDAD: " + this.getEdad();
-    
         return texto;
-    }
-
-    public getAtributos():string[]
-    {
+    };
+    Personaje.prototype.getAtributos = function () {
         return ["id", "nombre", "edad"];
-    }
-}
+    };
+    return Personaje;
+}());

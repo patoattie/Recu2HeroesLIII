@@ -61,7 +61,7 @@ class App
         //$("#info").html("");
         $("#info").empty();
     
-        let personajes:Legislador[] = App.cargarArrayPersonajes();
+        let personajes:Heroe[] = App.cargarArrayPersonajes();
 
         App.crearFiltros(personajes);
         App.crearTabla(personajes);
@@ -100,30 +100,30 @@ class App
         elemento.attr("aria-disabled", "true");
     }
 
-    public static cargarArrayPersonajes():Legislador[]
+    public static cargarArrayPersonajes():Heroe[]
     {
-        let personajes:Legislador[] = [];
-        let storage:Legislador[] = JSON.parse(localStorage.getItem("personajes"));
+        let personajes:Heroe[] = [];
+        let storage:Heroe[] = JSON.parse(localStorage.getItem("personajes"));
     
         if(storage == null || storage[0] == undefined) //Si el servidor no trae nada creo la estructura vacía.
         {
-            personajes[0] = new Legislador();
+            personajes[0] = new Heroe();
         }
         else
         {
             for(let i:number = 0; i < storage.length; i++)
             {
-                personajes[i] = new Legislador(storage[i]["id"], storage[i]["nombre"], storage[i]["apellido"], storage[i]["email"], storage[i]["edad"], storage[i]["sexo"], storage[i]["tipo"]);
+                personajes[i] = new Heroe(storage[i]["id"], storage[i]["nombre"], storage[i]["edad"], storage[i]["alias"], storage[i]["poder"], storage[i]["tipo"]);
             }
         }
     
         return personajes;
     }
 
-    public static cargarPersonajeSeleccionado():Legislador
+    public static cargarPersonajeSeleccionado():Heroe
     {
-        let storage:Legislador = JSON.parse(localStorage.getItem("personajeSeleccionado"));
-        let personajeSeleccionado:Legislador = new Legislador(storage["id"], storage["nombre"], storage["apellido"], storage["email"], storage["edad"], storage["sexo"], storage["tipo"]);
+        let storage:Heroe = JSON.parse(localStorage.getItem("personajeSeleccionado"));
+        let personajeSeleccionado:Heroe = new Heroe(storage["id"], storage["nombre"], storage["edad"], storage["alias"], storage["poder"], storage["tipo"]);
     
         return personajeSeleccionado;
     }
@@ -132,7 +132,7 @@ class App
     //sin parámetro. Lo invoca la opción de Alta del menú
     public static altaPersonaje():void
     {
-        let personajes:Legislador[] = App.cargarArrayPersonajes();
+        let personajes:Heroe[] = App.cargarArrayPersonajes();
 
         //App.activarMenu($("#btnAltaPersonaje"));
 
@@ -153,7 +153,7 @@ class App
     //pasándole por parámetro la personaje que se quiere editar. Lo invoca la opción de Editar del menú
     public static editarPersonaje():void
     {
-        let personajes:Legislador[] = App.cargarArrayPersonajes();
+        let personajes:Heroe[] = App.cargarArrayPersonajes();
 
         //App.activarMenu($("#btnEditarPersonaje"));
 
@@ -170,7 +170,7 @@ class App
         App.mostrarFormulario(personajes, App.cargarPersonajeSeleccionado());
     }
 
-    public static crearFiltros(personajes:Legislador[]):void
+    public static crearFiltros(personajes:Heroe[]):void
     {
         let div:JQuery<HTMLElement> = $("#info");
 
@@ -206,12 +206,12 @@ class App
         filtroTipo.on("change", App.traerPersonajes);
         $("#opcionTodos").text("Todos");
 
-        for(let unSexo in ESexo)
+        for(let unHeroe in EHeroe)
         {
-            if(isNaN(Number(unSexo))) //Para que no traiga los índices
+            if(isNaN(Number(unHeroe))) //Para que no traiga los índices
             {
-                filtroTipo.append("<option id=opcion" + unSexo + ">");
-                $("#opcion" + unSexo).text(unSexo);
+                filtroTipo.append("<option id=opcion" + unHeroe + ">");
+                $("#opcion" + unHeroe).text(unHeroe);
             }
         }
 
@@ -282,7 +282,7 @@ class App
     }
 
     //Crea la tabla de personajes en el div info
-    public static crearTabla(personajes:Legislador[]):void
+    public static crearTabla(personajes:Heroe[]):void
     {
         let puedeCrearDetalle:boolean = true; //Si no tengo elementos desde el servidor cambia a false.
         let div:JQuery<HTMLElement> = $("#info");
@@ -320,7 +320,7 @@ class App
     //Crea el formulario de edición de personajes en el div info.
     //El atributo id lo crea como solo lectura, ya que el servidor en el alta lo deduce,
     //y en la modificación no se altera su valor.
-    public static crearFormulario(personajes:Legislador[]):void
+    public static crearFormulario(personajes:Heroe[]):void
     {
         let div:JQuery<HTMLElement> = $("#info");
 
@@ -351,60 +351,6 @@ class App
         {
             switch(value)
             {
-                case "sexo":
-                    formulario.append("<fieldset id=grupoSexo>");
-                    //grupo.append("<div id=grupoSexo>");
-                    let grupoSexo:JQuery<HTMLElement> = $("#grupoSexo");
-                    grupoSexo.addClass("form-group");
-
-                    grupoSexo.append("<div id=grupoSexo2>");
-                    let grupoSexo2:JQuery<HTMLElement> = $("#grupoSexo2");
-                    grupoSexo2.addClass("row");
-
-                    //grupoSexo.append("<legend id=leyendaSexo>");
-                    //grupoSexo.append("<h5 id=leyendaSexo>");
-                    grupoSexo2.append("<legend id=leyendaSexo>");
-                    let leyendaSexo:JQuery<HTMLElement> = $("#leyendaSexo");
-                    leyendaSexo.addClass("col-form-label col-sm-2 pt-0");
-                    leyendaSexo.text("Sexo");
-
-                    grupoSexo2.append("<div id=grupoSexo3>");
-                    let grupoSexo3:JQuery<HTMLElement> = $("#grupoSexo3");
-                    grupoSexo3.addClass("col-sm-10");
-
-                    grupoSexo.addClass("grupoInterno");
-
-                    for(let unSexo in ESexo)
-                    {
-                        if(isNaN(Number(unSexo))) //Para que no traiga los índices
-                        {
-                            grupoSexo3.append("<div id=grupoSexo" + unSexo + ">");
-                            let grupoSexo4:JQuery<HTMLElement> = $("#grupoSexo" + unSexo);
-                            grupoSexo4.addClass("form-check");
-                            grupoSexo4.append("<input id=opt" + unSexo + ">");
-                            let optButton:JQuery<HTMLElement> = $("#opt" + unSexo);
-                            grupoSexo4.append("<label id=etiqueta" + unSexo + ">");
-
-                            let etiquetaSexo:JQuery<HTMLElement> = $("#etiqueta" + unSexo);
-                            etiquetaSexo.attr("for", "opt" + unSexo);
-                            etiquetaSexo.text(unSexo);
-                            //etiquetaSexo.addClass("form-check");
-                            etiquetaSexo.addClass("form-check-label");
-                            //etiquetaSexo.append("<input id=opt" + unSexo + ">");
-                            //let optButton:JQuery<HTMLElement> = $("#opt" + unSexo);
-
-                            optButton.attr("type", "radio");
-                            optButton.attr("name", "sexo");
-                            optButton.attr("value", unSexo);
-                            optButton.addClass("form-check-input");
-                            //optButton.text(" " + unSexo);
-
-                            //grupoSexo.append("<br>");
-                        }
-                    }
-
-                    break;
-
                 case "tipo":
                     formulario.append("<fieldset id=grupoTipo>");
                     //grupo.append("<div id=grupoTipo>");
@@ -428,7 +374,7 @@ class App
 
                     grupoTipo.addClass("grupoInterno");
 
-                    for(let unTipo in ELegislador)
+                    for(let unTipo in EHeroe)
                     {
                         if(isNaN(Number(unTipo))) //Para que no traiga los índices
                         {
@@ -468,7 +414,7 @@ class App
                     //grupo.append("<legend id=leyenda>");
                     //grupo.append("<h5 id=leyenda>");
                     //let leyenda:JQuery<HTMLElement> = $("#leyenda");
-                    //leyenda.text("Legislador");
+                    //leyenda.text("Heroe");
 
                     let atributoCapitalizado:string = value.charAt(0).toUpperCase() + value.slice(1).toLowerCase(); //Primer letra en mayuscula, resto minuscula
 
@@ -554,7 +500,7 @@ class App
     //Si se invoca con un objeto, la función asume modificación o baja de la personaje que viene
     //por parámetro, mostrando los botones que invocan las funciones respectivas en el servidor,
     //y completa los cuadros de texto con los valores de cada atributo.
-    public static mostrarFormulario(personajes:Legislador[], personajeSeleccionado?:Legislador):void
+    public static mostrarFormulario(personajes:Heroe[], personajeSeleccionado?:Heroe):void
     {
         if(personajeSeleccionado !== undefined) //Es distinto de undefined si vino un argumento en los parámetros formales de la función.
         {
@@ -576,47 +522,10 @@ class App
 
             switch(value)
             {
-                case "sexo":
-                    if(personajeSeleccionado !== undefined) //Modificar o Borrar
-                    {
-                        for(let unSexo in ESexo)
-                        {
-                            if(isNaN(Number(unSexo)))
-                            {
-                                if(unSexo == personajeSeleccionado.getSexo())
-                                {
-                                    $("#opt" + unSexo).prop("checked", true);
-                                }
-                                else
-                                {
-                                    $("#opt" + unSexo).prop("checked", false);
-                                }
-                            }
-                        }
-                    }
-                    else //Agregar
-                    {
-                        for(let unSexo in ESexo)
-                        {
-                            if(isNaN(Number(unSexo)))
-                            {
-                                if(unSexo == ESexo.Mujer)
-                                {
-                                    $("#opt" + unSexo).prop("checked", true);
-                                }
-                                else
-                                {
-                                    $("#opt" + unSexo).prop("checked", false);
-                                }
-                            }
-                        }
-                    }
-                    break;
-                    
                 case "tipo":
                     if(personajeSeleccionado !== undefined) //Modificar o Borrar
                     {
-                        for(let unTipo in ELegislador)
+                        for(let unTipo in EHeroe)
                         {
                             if(isNaN(Number(unTipo)))
                             {
@@ -633,11 +542,11 @@ class App
                     }
                     else //Agregar
                     {
-                        for(let unTipo in ELegislador)
+                        for(let unTipo in EHeroe)
                         {
                             if(isNaN(Number(unTipo)))
                             {
-                                if(unTipo == ELegislador.Diputado)
+                                if(unTipo == EHeroe.Avenger)
                                 {
                                     $("#opt" + unTipo).prop("checked", true);
                                 }
@@ -659,7 +568,7 @@ class App
                     {
                         if(value === "id")
                         {
-                            $("#txt" + atributoCapitalizado).val(Legislador.getProximoId());
+                            $("#txt" + atributoCapitalizado).val(Heroe.getProximoId());
                         }
                         else
                         {
@@ -690,7 +599,7 @@ class App
     }
 
     //Crea la fila de cabecera, con tantas columnas como atributos posea la personaje, en la tabla de personajes.
-    public static crearCabecera(personajes:Legislador[], tablaPersonajes:JQuery<HTMLElement>):void
+    public static crearCabecera(personajes:Heroe[], tablaPersonajes:JQuery<HTMLElement>):void
     {
         //tablaPersonajes.append("<tr id=filaCabecera>");
         tablaPersonajes.append("<thead id=thead1>");
@@ -712,14 +621,14 @@ class App
     }
 
     //Crea tantas fila de detalle en la tabla de personajes como personajes haya cargadas.
-    public static crearDetalle(tablaPersonajes:JQuery<HTMLElement>, datos:Legislador[]):void
+    public static crearDetalle(tablaPersonajes:JQuery<HTMLElement>, datos:Heroe[]):void
     {
         let filaDetalle:JQuery<HTMLElement>;
         tablaPersonajes.append("<tbody id=tbody1>");
 
-        let datosFilter:Legislador[] = datos.filter(function(value:Legislador)
+        let datosFilter:Heroe[] = datos.filter(function(value:Heroe)
         {
-            return (value.getSexoStr() == $("#filtroTipo").val() || $("#filtroTipo").val() == "Todos");
+            return (value.getTipoStr() == $("#filtroTipo").val() || $("#filtroTipo").val() == "Todos");
         });
 
 //datosMap
@@ -764,8 +673,8 @@ class App
     public static seleccionarFila():void
     {
         let filaActual:JQuery<App> = $(this);
-        //let personajeSeleccionado:Legislador = App.cargarPersonajeSeleccionado();
-        let personajeSeleccionado:Legislador = new Legislador();
+        //let personajeSeleccionado:Heroe = App.cargarPersonajeSeleccionado();
+        let personajeSeleccionado:Heroe = new Heroe();
         //$("#btnEditarPersonaje").removeAttr("disabled");
         //$("#btnEditarPersonaje").css("pointer-events", "auto");
         App.habilitarMenu($("#btnEditarPersonaje"));
@@ -787,7 +696,7 @@ class App
     //Llamador usado por el evento dla opción de Agregar del formulario
     public static opcionAgregarPersonaje():void
     {
-        let personajes:Legislador[] = App.cargarArrayPersonajes();
+        let personajes:Heroe[] = App.cargarArrayPersonajes();
 
         App.agregarPersonaje(personajes, App.personajeEditado(personajes));
     }
@@ -795,7 +704,7 @@ class App
     //Llamador usado por el evento dla opción de Borrar del formulario
     public static opcionBorrarPersonaje():void
     {
-        let personajes:Legislador[] = App.cargarArrayPersonajes();
+        let personajes:Heroe[] = App.cargarArrayPersonajes();
 
         App.borrarPersonaje(personajes, App.cargarPersonajeSeleccionado());
     }
@@ -803,17 +712,17 @@ class App
     //Llamador usado por el evento de la opción de Modificar del formulario
     public static opcionModificarPersonaje():void
     {
-        let personajes:Legislador[] = App.cargarArrayPersonajes();
+        let personajes:Heroe[] = App.cargarArrayPersonajes();
 
         App.modificarPersonaje(personajes, App.cargarPersonajeSeleccionado(), App.personajeEditado(personajes));
     }
 
     //Llama a la función altaPersonaje del servidor, pasándole el objeto que se quiere agregar por parámetro.
-    public static agregarPersonaje(personajes:Legislador[], personaje:Legislador):void
+    public static agregarPersonaje(personajes:Heroe[], personaje:Heroe):void
     {
-        let nuevoPersonaje:Legislador[] = [];
+        let nuevoPersonaje:Heroe[] = [];
 
-        personaje.setId(Legislador.getProximoId());
+        personaje.setId(Heroe.getProximoId());
 
         nuevoPersonaje.push(personaje);
         App.ocultarFormulario();
@@ -829,22 +738,22 @@ class App
         }
 
         localStorage.setItem("personajes", JSON.stringify(personajes));
-        Legislador.setProximoId();
+        Heroe.setProximoId();
     }
 
     //Llama a la función bajaPersonaje del servidor, pasándole el objeto que se quiere eliminar por parámetro.
-    public static borrarPersonaje(personajes:Legislador[], personaje:Legislador):void
+    public static borrarPersonaje(personajes:Heroe[], personaje:Heroe):void
     {
         /*let index:number = personajes.findIndex((per) => 
         {
             return per.id == personaje.getId();
         });*/
 
-        if(confirm("¿Confirma el borrado del Legislador?\n\n" + personaje.toString()))
+        if(confirm("¿Confirma el borrado del Heroe?\n\n" + personaje.toString()))
         {
                 let posicion:number = -1;
                 
-                personajes.forEach(function(value:Legislador, index:number)
+                personajes.forEach(function(value:Heroe, index:number)
                 {
                 if(value.getId() == personaje.getId())
                 {
@@ -856,7 +765,7 @@ class App
             {
                 personajes.splice(posicion, 1);
 
-                alert("Legislador:\n\n" + personaje.toString() + "\n\nfue borrada de la tabla");
+                alert("Heroe:\n\n" + personaje.toString() + "\n\nfue borrada de la tabla");
                 
                 $("#filaSeleccionada").remove();
             }
@@ -868,18 +777,18 @@ class App
     }
 
     //Llama a la función modificarPersonaje del servidor, pasándole el objeto que se quiere modificar por parámetro.
-    public static modificarPersonaje(personajes:Legislador[], personaPre:Legislador, personaPost:Legislador):void
+    public static modificarPersonaje(personajes:Heroe[], personaPre:Heroe, personaPost:Heroe):void
     {
         /*let index:number = personajes.findIndex((per) => 
         {
             return per.id == personaPost.getId();
         });*/
     
-        if(confirm("¿Confirma la modificacion del Legislador?\n\n" + personaPre.toString() + "\n\na\n\n" + personaPost.toString()))
+        if(confirm("¿Confirma la modificacion del Heroe?\n\n" + personaPre.toString() + "\n\na\n\n" + personaPost.toString()))
         {
             let posicion:number = -1;
 
-            personajes.forEach(function(value:Legislador, index:number)
+            personajes.forEach(function(value:Heroe, index:number)
             {
                 if(value.getId() == personaPost.getId())
                 {
@@ -892,7 +801,7 @@ class App
                 personajes.splice(posicion, 1);
                 personajes.push(personaPost);
 
-                alert("Legislador:\n\n" + personaPre.toString() + "\n\nfue modificada a:\n\n" + personaPost.toString());
+                alert("Heroe:\n\n" + personaPre.toString() + "\n\nfue modificada a:\n\n" + personaPost.toString());
                 App.modificarFilaSeleccionada(personaPost);
             }
         
@@ -905,7 +814,7 @@ class App
     //Modifica los datos de la fila seleccionada con los datos de la personaje pasada por parámetro.
     //Esta función la invoca la opción de modificar una personaje del servidor,
     //una vez devuelto el ok del mismo.
-    public static modificarFilaSeleccionada(datos:Legislador):void
+    public static modificarFilaSeleccionada(datos:Heroe):void
     {
         let filaSeleccionada:JQuery<HTMLElement> = $("#filaSeleccionada");
 
@@ -919,19 +828,15 @@ class App
     }
 
     //Crea un objeto JSON a partir de los datos del formulario
-    public static personajeEditado(personajes:Legislador[]):Legislador
+    public static personajeEditado(personajes:Heroe[]):Heroe
     {
-        let personaje:Legislador = new Legislador();
+        let personaje:Heroe = new Heroe();
 
         //for(let atributo in personajes[0].getAtributos())
         personajes[0].getAtributos().forEach(function(value:string):void
         {
             switch(value)
             {
-                case "sexo":
-                    let valor:string = String($('input[name="sexo"]:checked').val());
-                    personaje.setSexoStr(valor);
-                    break;
                 case "tipo":
                     let valor2:string = String($('input[name="tipo"]:checked').val());
                     personaje.setTipoStr(valor2);
