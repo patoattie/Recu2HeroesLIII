@@ -163,6 +163,11 @@ var App = (function () {
             campo.attr("type", "checkbox");
             campo.attr("value", value);
             campo.prop("checked", true);
+            campo.on("change", function () {
+                var personajesFiltrados = App.filtrarPersonajes(App.cargarArrayPersonajes());
+                $("#tablaPersonajes").empty();
+                App.crearTabla(personajesFiltrados);
+            });
             divCampo.append("<label id=etiquetaCampo" + value + ">");
             var etiquetaCampo = $("#etiquetaCampo" + value);
             etiquetaCampo.attr("for", value);

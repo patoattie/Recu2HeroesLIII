@@ -262,6 +262,13 @@ class App
             campo.attr("value", value);
             campo.prop("checked", true);
 
+            campo.on("change", function()
+            {
+                let personajesFiltrados:Heroe[] = App.filtrarPersonajes(App.cargarArrayPersonajes());
+                $("#tablaPersonajes").empty();
+                App.crearTabla(personajesFiltrados);
+            });
+
             divCampo.append("<label id=etiquetaCampo" + value + ">");
             let etiquetaCampo:JQuery<HTMLElement> = $("#etiquetaCampo" + value);
             etiquetaCampo.attr("for", value);
