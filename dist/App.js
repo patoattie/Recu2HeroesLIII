@@ -121,7 +121,11 @@ var App = (function () {
         var filtroTipo = $("#filtroTipo");
         filtroTipo.addClass("form-control-inline col-sm-6");
         filtroTipo.append("<option id=opcionTodos>");
-        filtroTipo.on("change", App.traerPersonajes);
+        filtroTipo.on("change", function () {
+            var personajesFiltrados = App.filtrarPersonajes(App.cargarArrayPersonajes());
+            $("#tablaPersonajes").empty();
+            App.crearTabla(personajesFiltrados);
+        });
         $("#opcionTodos").text("Todos");
         for (var unHeroe in EHeroe) {
             if (isNaN(Number(unHeroe))) {
@@ -179,7 +183,7 @@ var App = (function () {
         if (personajes[0].getId() == null) {
             puedeCrearDetalle = false;
         }
-        App.crearCabecera(personajes, $("#tablaPersonajes"));
+        App.crearCabecera(personajes, tablaPersonajes);
         if (puedeCrearDetalle) {
             App.crearDetalle(tablaPersonajes, personajes);
         }
@@ -251,8 +255,8 @@ var App = (function () {
                     grupoInput.addClass("col-sm-10");
                     grupoInput.append("<input id=txt" + atributoCapitalizado + ">");
                     var cuadroTexto = $("#txt" + atributoCapitalizado);
-                    if (value === "email") {
-                        cuadroTexto.attr("type", "email");
+                    if (value === "edad") {
+                        cuadroTexto.attr("type", "number");
                     }
                     else {
                         cuadroTexto.attr("type", "text");
@@ -363,27 +367,63 @@ var App = (function () {
         $("#thead1").append("<tr id=filaCabecera>");
         var fila = $("#filaCabecera");
         personajes[0].getAtributos().forEach(function (value) {
-            fila.append("<th id=ColumnaCabecera" + value + ">" + value);
+            if (personajes[0].getDinamico(value) != undefined) {
+                fila.append("<th id=ColumnaCabecera" + value + ">" + value);
+            }
         });
     };
     App.crearDetalle = function (tablaPersonajes, datos) {
         var filaDetalle;
         tablaPersonajes.append("<tbody id=tbody1>");
-        var datosFilter = datos.filter(function (value) {
-            return (value.getTipoStr() == $("#filtroTipo").val() || $("#filtroTipo").val() == "Todos");
-        });
         var _loop_1 = function (i) {
-            $("#tbody1").append("<tr id=filaDetalle" + datosFilter[i].getId() + ">");
-            filaDetalle = $("#filaDetalle" + datosFilter[i].getId());
+            $("#tbody1").append("<tr id=filaDetalle" + datos[i].getId() + ">");
+            filaDetalle = $("#filaDetalle" + datos[i].getId());
             filaDetalle.on("click", App.seleccionarFila);
-            datosFilter[i].getAtributos().forEach(function (value) {
-                filaDetalle.append("<td id=ColumnaDetalle" + value + datosFilter[i].getId() + ">" + datosFilter[i].getDinamico(value));
-                $("#ColumnaDetalle" + value + datosFilter[i].getId()).addClass(value);
+            datos[i].getAtributos().forEach(function (value) {
+                if (datos[i].getDinamico(value) != undefined) {
+                    filaDetalle.append("<td id=ColumnaDetalle" + value + datos[i].getId() + ">" + datos[i].getDinamico(value));
+                    $("#ColumnaDetalle" + value + datos[i].getId()).addClass(value);
+                }
             });
         };
-        for (var i = 0; i < datosFilter.length; i++) {
+        for (var i = 0; i < datos.length; i++) {
             _loop_1(i);
         }
+    };
+    App.filtrarPersonajes = function (datos) {
+        var datosFilter = datos.filter(function (value) {
+            return (value.getTipoStr() == $("#filtroTipo").val() || $("#filtroTipo").val() == "Todos");
+        }).map(function (value) {
+            var id = null;
+            var nombre = null;
+            var edad = null;
+            var alias = null;
+            var poder = null;
+            var tipo = null;
+            if ($("#campoid").prop("checked")) {
+                id = value.getId();
+            }
+            if ($("#camponombre").prop("checked")) {
+                nombre = value.getNombre();
+            }
+            if ($("#campoedad").prop("checked")) {
+                edad = value.getEdad();
+            }
+            if ($("#campoalias").prop("checked")) {
+                alias = value.getAlias();
+            }
+            if ($("#campopoder").prop("checked")) {
+                poder = value.getPoder();
+            }
+            if ($("#campotipo").prop("checked")) {
+                tipo = value.getTipo();
+            }
+            return new Heroe(id, nombre, edad, alias, poder, tipo);
+        });
+        if (datosFilter.length == 0) {
+            datosFilter[0] = new Heroe();
+        }
+        return datosFilter;
     };
     App.blanquearFila = function () {
         $("#filaSeleccionada").removeClass("table-primary");

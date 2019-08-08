@@ -342,7 +342,11 @@ var App = /** @class */ (function () {
         var filtroTipo = $("#filtroTipo");
         filtroTipo.addClass("form-control-inline col-sm-6");
         filtroTipo.append("<option id=opcionTodos>");
-        filtroTipo.on("change", App.traerPersonajes);
+        filtroTipo.on("change", function () {
+            var personajesFiltrados = App.filtrarPersonajes(App.cargarArrayPersonajes());
+            $("#tablaPersonajes").empty();
+            App.crearTabla(personajesFiltrados);
+        });
         $("#opcionTodos").text("Todos");
         for (var unHeroe in EHeroe) {
             if (isNaN(Number(unHeroe))) //Para que no traiga los índices
@@ -413,7 +417,7 @@ var App = /** @class */ (function () {
          {
             puedeCrearDetalle = false;
         }
-        App.crearCabecera(personajes, $("#tablaPersonajes"));
+        App.crearCabecera(personajes, tablaPersonajes);
         if (puedeCrearDetalle) {
             App.crearDetalle(tablaPersonajes, personajes);
         }
@@ -507,8 +511,8 @@ var App = /** @class */ (function () {
                     grupoInput.addClass("col-sm-10");
                     grupoInput.append("<input id=txt" + atributoCapitalizado + ">");
                     var cuadroTexto = $("#txt" + atributoCapitalizado);
-                    if (value === "email") {
-                        cuadroTexto.attr("type", "email");
+                    if (value === "edad") {
+                        cuadroTexto.attr("type", "number");
                     }
                     else {
                         cuadroTexto.attr("type", "text");
@@ -646,7 +650,9 @@ var App = /** @class */ (function () {
         //for(let atributo in personajes[0].getAtributos())
         personajes[0].getAtributos().forEach(function (value) {
             //fila.append("<th>" + value);
-            fila.append("<th id=ColumnaCabecera" + value + ">" + value);
+            if (personajes[0].getDinamico(value) != undefined) {
+                fila.append("<th id=ColumnaCabecera" + value + ">" + value);
+            }
             //fila.append("<div id=ColumnaCabecera" + value + ">" + value);
             //$("#ColumnaCabecera" + value).addClass("col-sm-2");
         });
@@ -655,34 +661,69 @@ var App = /** @class */ (function () {
     App.crearDetalle = function (tablaPersonajes, datos) {
         var filaDetalle;
         tablaPersonajes.append("<tbody id=tbody1>");
-        var datosFilter = datos.filter(function (value) {
-            return (value.getTipoStr() == $("#filtroTipo").val() || $("#filtroTipo").val() == "Todos");
-        });
         var _loop_1 = function (i) {
             //tablaPersonajes.append("<tr id=filaDetalle" + i + ">");
-            $("#tbody1").append("<tr id=filaDetalle" + datosFilter[i].getId() + ">");
+            $("#tbody1").append("<tr id=filaDetalle" + datos[i].getId() + ">");
             //tablaPersonajes.append("<div id=filaDetalle" + i + ">");
-            filaDetalle = $("#filaDetalle" + datosFilter[i].getId());
+            filaDetalle = $("#filaDetalle" + datos[i].getId());
             //filaDetalle.addClass("row");
             //let columna;
             filaDetalle.on("click", App.seleccionarFila);
-            //for(let atributo in datosFilter[i].getAtributos())
-            datosFilter[i].getAtributos().forEach(function (value) {
+            //for(let atributo in datos[i].getAtributos())
+            datos[i].getAtributos().forEach(function (value) {
                 //filaDetalle.append("<td>");
                 //columna = filaDetalle.children("td");
                 //columna.attr("class", value);
-                filaDetalle.append("<td id=ColumnaDetalle" + value + datosFilter[i].getId() + ">" + datosFilter[i].getDinamico(value));
-                //filaDetalle.append("<div id=ColumnaDetalle" + value + i + ">" + datosFilter[i].getDinamico(value));
-                //columna = filaDetalle.children("td");
-                //$("#ColumnaDetalle" + value + i).attr("class", value);
-                $("#ColumnaDetalle" + value + datosFilter[i].getId()).addClass(value);
-                //$("#ColumnaDetalle" + value + i).addClass("col-sm-2");
+                if (datos[i].getDinamico(value) != undefined) {
+                    filaDetalle.append("<td id=ColumnaDetalle" + value + datos[i].getId() + ">" + datos[i].getDinamico(value));
+                    //filaDetalle.append("<div id=ColumnaDetalle" + value + i + ">" + datos[i].getDinamico(value));
+                    //columna = filaDetalle.children("td");
+                    //$("#ColumnaDetalle" + value + i).attr("class", value);
+                    $("#ColumnaDetalle" + value + datos[i].getId()).addClass(value);
+                    //$("#ColumnaDetalle" + value + i).addClass("col-sm-2");
+                }
             });
         };
         //datosMap
-        for (var i = 0; i < datosFilter.length; i++) {
+        //let datosFilter:Heroe[] = App.filtrarPersonajes(datos);
+        for (var i = 0; i < datos.length; i++) {
             _loop_1(i);
         }
+    };
+    App.filtrarPersonajes = function (datos) {
+        var datosFilter = datos.filter(function (value) {
+            return (value.getTipoStr() == $("#filtroTipo").val() || $("#filtroTipo").val() == "Todos");
+        }).map(function (value) {
+            var id = null;
+            var nombre = null;
+            var edad = null;
+            var alias = null;
+            var poder = null;
+            var tipo = null;
+            if ($("#campoid").prop("checked")) {
+                id = value.getId();
+            }
+            if ($("#camponombre").prop("checked")) {
+                nombre = value.getNombre();
+            }
+            if ($("#campoedad").prop("checked")) {
+                edad = value.getEdad();
+            }
+            if ($("#campoalias").prop("checked")) {
+                alias = value.getAlias();
+            }
+            if ($("#campopoder").prop("checked")) {
+                poder = value.getPoder();
+            }
+            if ($("#campotipo").prop("checked")) {
+                tipo = value.getTipo();
+            }
+            return new Heroe(id, nombre, edad, alias, poder, tipo);
+        });
+        if (datosFilter.length == 0) {
+            datosFilter[0] = new Heroe();
+        }
+        return datosFilter;
     };
     //Quita el atributo id de la fila seleccionada.
     App.blanquearFila = function () {
