@@ -51,6 +51,19 @@ class App
                 App.editarPersonaje();
             }
         });
+        $("#btnLimpiar").on("click", function(event)
+        {
+            if(event.target.getAttribute("aria-disabled"))
+            {
+                event.preventDefault();
+            }
+            else
+            {
+                localStorage.setItem("ID", "20000");
+                localStorage.setItem("personajes", "[{}]");
+                localStorage.removeItem("personajeSeleccionado");
+            }
+        });
     }
 
     //Llama a la función traerPersonajes del localStorage, luego con los datos devueltos se crean en el DOM la tabla y el formulario de edición.
@@ -71,6 +84,7 @@ class App
         //$("#btnAltaPersonaje").css("pointer-events", "auto");
         App.habilitarMenu($("#btnAltaPersonaje"));
         App.deshabilitarMenu($("#btnEditarPersonaje"));
+        App.calcularPromedio(personajes);
     }
     
     public static activarMenu(elemento:JQuery<HTMLElement>):void
@@ -704,7 +718,25 @@ class App
             datosFilter[0] = new Heroe();
         }
 
+        App.calcularPromedio(datosFilter);
+
         return datosFilter;
+    }
+
+    public static calcularPromedio(datos:Heroe[]):void
+    {
+        let edades:number[] = [];
+
+        datos.forEach(element => 
+        {
+            edades.push(Number(element.getEdad()));
+        });
+        let promedioEdad:number = edades.reduce(function(previo:number, actual:number)
+        {
+            return previo + actual;
+        }, 0);
+
+        $("#promedioEdad").attr("value", promedioEdad / datos.length);
     }
 
     //Quita el atributo id de la fila seleccionada.

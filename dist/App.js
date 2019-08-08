@@ -29,6 +29,16 @@ var App = (function () {
                 App.editarPersonaje();
             }
         });
+        $("#btnLimpiar").on("click", function (event) {
+            if (event.target.getAttribute("aria-disabled")) {
+                event.preventDefault();
+            }
+            else {
+                localStorage.setItem("ID", "20000");
+                localStorage.setItem("personajes", "[{}]");
+                localStorage.removeItem("personajeSeleccionado");
+            }
+        });
     };
     App.traerPersonajes = function () {
         App.habilitarMenu($("#btnGetPersonajes"));
@@ -40,6 +50,7 @@ var App = (function () {
         App.crearFormulario(personajes);
         App.habilitarMenu($("#btnAltaPersonaje"));
         App.deshabilitarMenu($("#btnEditarPersonaje"));
+        App.calcularPromedio(personajes);
     };
     App.activarMenu = function (elemento) {
         elemento.parent().addClass("active");
@@ -428,7 +439,18 @@ var App = (function () {
         if (datosFilter.length == 0) {
             datosFilter[0] = new Heroe();
         }
+        App.calcularPromedio(datosFilter);
         return datosFilter;
+    };
+    App.calcularPromedio = function (datos) {
+        var edades = [];
+        datos.forEach(function (element) {
+            edades.push(Number(element.getEdad()));
+        });
+        var promedioEdad = edades.reduce(function (previo, actual) {
+            return previo + actual;
+        }, 0);
+        $("#promedioEdad").attr("value", promedioEdad / datos.length);
     };
     App.blanquearFila = function () {
         $("#filaSeleccionada").removeClass("table-primary");

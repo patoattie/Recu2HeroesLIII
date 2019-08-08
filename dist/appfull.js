@@ -232,6 +232,16 @@ var App = /** @class */ (function () {
                 App.editarPersonaje();
             }
         });
+        $("#btnLimpiar").on("click", function (event) {
+            if (event.target.getAttribute("aria-disabled")) {
+                event.preventDefault();
+            }
+            else {
+                localStorage.setItem("ID", "20000");
+                localStorage.setItem("personajes", "[{}]");
+                localStorage.removeItem("personajeSeleccionado");
+            }
+        });
     };
     //Llama a la función traerPersonajes del localStorage, luego con los datos devueltos se crean en el DOM la tabla y el formulario de edición.
     App.traerPersonajes = function () {
@@ -247,6 +257,7 @@ var App = /** @class */ (function () {
         //$("#btnAltaPersonaje").css("pointer-events", "auto");
         App.habilitarMenu($("#btnAltaPersonaje"));
         App.deshabilitarMenu($("#btnEditarPersonaje"));
+        App.calcularPromedio(personajes);
     };
     App.activarMenu = function (elemento) {
         elemento.parent().addClass("active");
@@ -728,7 +739,18 @@ var App = /** @class */ (function () {
         if (datosFilter.length == 0) {
             datosFilter[0] = new Heroe();
         }
+        App.calcularPromedio(datosFilter);
         return datosFilter;
+    };
+    App.calcularPromedio = function (datos) {
+        var edades = [];
+        datos.forEach(function (element) {
+            edades.push(Number(element.getEdad()));
+        });
+        var promedioEdad = edades.reduce(function (previo, actual) {
+            return previo + actual;
+        }, 0);
+        $("#promedioEdad").attr("value", promedioEdad / datos.length);
     };
     //Quita el atributo id de la fila seleccionada.
     App.blanquearFila = function () {
