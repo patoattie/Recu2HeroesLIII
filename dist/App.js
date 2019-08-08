@@ -112,14 +112,14 @@ var App = (function () {
         divFilaFiltros2.addClass("row bg-danger");
         divFilaFiltros2.append("<div id=divFiltroTipo>");
         var divFiltroTipo = $("#divFiltroTipo");
-        divFiltroTipo.addClass("col-sm-4");
+        divFiltroTipo.addClass("col-sm-6");
         divFiltroTipo.append("<label id=labelFiltroTipo>");
         var labelFiltroTipo = $("#labelFiltroTipo");
         labelFiltroTipo.attr("for", "filtroTipo");
         labelFiltroTipo.text("Filtrar por");
         divFiltroTipo.append("<select id=filtroTipo>");
         var filtroTipo = $("#filtroTipo");
-        filtroTipo.addClass("form-control-inline col-sm-4");
+        filtroTipo.addClass("form-control-inline col-sm-6");
         filtroTipo.append("<option id=opcionTodos>");
         filtroTipo.on("change", App.traerPersonajes);
         $("#opcionTodos").text("Todos");
@@ -131,7 +131,7 @@ var App = (function () {
         }
         divFilaFiltros2.append("<div id=divPromedioEdad>");
         var divPromedioEdad = $("#divPromedioEdad");
-        divPromedioEdad.addClass("col-sm-4");
+        divPromedioEdad.addClass("col-sm-6");
         divPromedioEdad.append("<label id=labelPromedioEdad>");
         var labelPromedioEdad = $("#labelPromedioEdad");
         labelPromedioEdad.attr("for", "promedioEdad");
@@ -141,18 +141,6 @@ var App = (function () {
         promedioEdad.attr("type", "text");
         promedioEdad.prop("readonly", true);
         promedioEdad.append("<option id=opcionTodos>");
-        divFilaFiltros2.append("<div id=divGenderMix>");
-        var divGenderMix = $("#divGenderMix");
-        divGenderMix.addClass("col-sm-4");
-        divGenderMix.append("<label id=labelGenderMix>");
-        var labelGenderMix = $("#labelGenderMix");
-        labelGenderMix.attr("for", "genderMix");
-        labelGenderMix.text("Gender Mix");
-        divGenderMix.append("<input id=genderMix>");
-        var genderMix = $("#genderMix");
-        genderMix.attr("type", "text");
-        genderMix.prop("readonly", true);
-        genderMix.append("<option id=opcionTodos>");
         divFiltroPersonajes.append("<div id=divFilaCampos1>");
         var divFilaCampos1 = $("#divFilaCampos1");
         divFilaCampos1.addClass("row bg-warning");
